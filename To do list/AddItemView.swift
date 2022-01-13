@@ -13,7 +13,6 @@ struct AddItemView: View {
         static let priorities = ["High", "Medium", "Low"]
     
         @ObservedObject var toDoList: ToDoList
-        @State private var showingAddItemView = false
         @State private var priority = ""
         @State private var description = ""
         @State private var dueDate = Date()
@@ -30,15 +29,15 @@ struct AddItemView: View {
                     }
                 }
             }
-           .sheet(isPresented: $showingAddItemView, content: {
-                AddItemView(toDoList: toDoList)
-            })
            .navigationBarTitle("Add New To-Do Item", displayMode: .inline)
-           .navigationBarItems(leading: EditButton(),
-                              trailing: Button(action: {
-                                  showingAddItemView = true}) {
-                                  Image(systemName: "plus")
-            })
+           .navigationBarItems(trailing: Button("Save") {
+                           if priority.count > 0 && description.count > 0 {
+                               let item = ToDoItem(id: UUID(), priority: priority,
+                                                   description: description, dueDate: dueDate)
+                               toDoList.items.append(item)
+                               presentationMode.wrappedValue.dismiss()
+                           }
+                       })
         }
     }
 }
